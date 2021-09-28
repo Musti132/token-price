@@ -1,0 +1,29 @@
+{
+    "name": "musti/token-price",
+    "description": "Library to get latest prices on crypto tokens from different sources",
+    "type": "library",
+    "config": {
+        "platform": {
+            "php": "8.0"
+        }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^7.3"
+    },
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "TokenPrice\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Musti",
+            "email": "44943708+Musti132@users.noreply.github.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require-dev": {
+        "symfony/var-dumper": "^5.3"
+    }
+}
