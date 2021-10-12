@@ -2,6 +2,7 @@
 
 namespace TokenPrice\Market\Traits;
 
+use ReflectionClass;
 use TokenPrice\Token;
 
 trait HasPrices
@@ -9,6 +10,7 @@ trait HasPrices
     public function __construct(Token|array $tokens, string $apiKey = null)
     {
         $this->apiKey = $apiKey;
+
         
         $this->checkForApiRequirements();
 
@@ -33,6 +35,14 @@ trait HasPrices
      */
     public function price(callable $function = null)
     {
+        if(!$this->canCheckPrice($this->tokens->getShortName())) {
+            $reflect = new ReflectionClass($this);
+
+            $name = $reflect->getShortName();
+
+            return (object)['error' => $name.' can\'t check prices other than: '. implode(', ', $this->only)];
+        }
+
         return $this->getPrice($function);
     }
 }

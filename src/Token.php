@@ -114,7 +114,7 @@ class Token
         foreach ($this->markets as $market => $value) {
             $function = (array_key_exists('function', $value)) ? $value['function'] : null;
 
-            $prices[$market] = $value['instance']->getPrice($function);
+            $prices[$market] = $value['instance']->price($function);
         }
 
         return (object) $prices;

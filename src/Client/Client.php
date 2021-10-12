@@ -9,6 +9,7 @@ Class Client {
     public $request;
     public $url;
     public $method;
+
     public array $options = [
         'http_errors' => false,
         'verify' => false,
@@ -19,7 +20,9 @@ Class Client {
     }
 
     public function execute() {
-        return $this->request = $this->client->request($this->method, $this->url, $this->options);
+        $this->request = $this->client->request($this->method, $this->url, $this->options);
+
+        return $this;
     }
 
     public function method(string $method) {

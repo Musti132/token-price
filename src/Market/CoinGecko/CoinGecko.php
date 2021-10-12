@@ -30,10 +30,21 @@ class CoinGecko extends Market implements ApiEndpointInterface
      */
     public function getPrice(callable $function = null)
     {
-        if (!$this->canCheckPrice($this->tokens->getShortName())) {
-            return ['error' => 'CoinGecko can\'t check prices other than: ' . implode(',', $this->only)];
+        $request = $this->executeRequest();
+
+        if (is_callable($function)) {
+            return $function(json_decode($request->body(), true));
         }
 
+        $model = CoinGeckoModel::create($request->body(), [
+            'currencies' => strtolower($this->currencies),
+            'slug' => $this->tokens->slug(),
+        ]);
+
+        return $model->filter();
+    }
+
+    public function executeRequest() {
         $client = new Client();
 
         $options = [
@@ -43,20 +54,9 @@ class CoinGecko extends Market implements ApiEndpointInterface
             ],
         ];
 
-        $client->method('GET')
+        return $client->method('GET')
             ->url($this->endpoint() . $this->path)
             ->options($options)
             ->execute();
-
-        if (is_callable($function)) {
-            return $function(json_decode($client->body(), true));
-        }
-
-        $model = CoinGeckoModel::create($client->body(), [
-            'currencies' => strtolower($this->currencies),
-            'slug' => $this->tokens->slug(),
-        ]);
-
-        return $model->filter();
     }
 }

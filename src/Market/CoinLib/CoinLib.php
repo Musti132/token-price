@@ -41,33 +41,33 @@ class CoinLib extends Market implements ApiEndpointInterface, ApiSecretInterface
      */
     public function getPrice(callable $function = null)
     {
-        if(!$this->canCheckPrice($this->tokens->getShortName())) {
-            return ['error' => 'CoinLib can\'t check prices other than: '. implode(',', $this->only)];
+        $request = $this->executeRequest();
+
+        if(is_callable($function)) {
+            return $function(json_decode($request->body(), true));
         }
 
+        $model = CoinLibModel::create($request->body(), [
+            'currencies' => $this->currencies,
+        ]);
+
+        return $model->filter();
+    }
+
+    public function executeRequest() {
         $client = new Client();
-        
+
         $options = [
             'query' => [
-                'key' => '2dfaa9250dc8a543',
+                'key' => $this->apiKey,
                 'pref' => $this->currencies,
                 'symbol' => $this->tokens->getShortName(),
             ],
         ];
 
-        $client->method('GET')
+        return $client->method('GET')
             ->url($this->endpoint() . $this->path)
             ->options($options)
             ->execute();
-
-        if(is_callable($function)) {
-            return $function(json_decode($client->body(), true));
-        }
-
-        $model = CoinLibModel::create($client->body(), [
-            'currencies' => $this->currencies,
-        ]);
-
-        return $model->filter();
     }
 }

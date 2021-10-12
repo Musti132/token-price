@@ -39,10 +39,20 @@ class CoinMarketCap extends Market implements ApiSecretInterface, ApiEndpointInt
      */
     public function getPrice(callable $function = null)
     {
-        if(!$this->canCheckPrice($this->tokens->getShortName())) {
-            return ['error' => 'CoinMarketCap can\'t check prices other than: '. implode(',', $this->only)];
+        $request = $this->executeRequest();
+
+        if(is_callable($function)) {
+            return $function(json_decode($request->body(), true));
         }
 
+        $model = CoinMarketCapModel::create($request->body(), [
+            'currencies' => $this->currencies,
+        ]);
+
+        return $model->filter();
+    }
+
+    public function executeRequest() {
         $client = new Client();
 
         $options = [
@@ -53,19 +63,9 @@ class CoinMarketCap extends Market implements ApiSecretInterface, ApiEndpointInt
             ],
         ];
         
-        $client->method('GET')
+        return $client->method('GET')
             ->url($this->endpoint() . $this->path)
             ->options($options)
             ->execute();
-
-        if(is_callable($function)) {
-            return $function(json_decode($client->body(), true));
-        }
-
-        $model = CoinMarketCapModel::create($client->body(), [
-            'currencies' => $this->currencies,
-        ]);
-
-        return $model->filter();
     }
 }
