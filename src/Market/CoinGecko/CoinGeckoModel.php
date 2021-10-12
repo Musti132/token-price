@@ -10,10 +10,16 @@ class CoinGeckoModel
 
     public function filter()
     {
-        $filtered = json_decode(self::$data, true)
+        $decoded = json_decode(self::$data, true);
+
+        if(empty($decoded)) {
+            return $this->notFound();
+        }
+
+        $filtered = $decoded
             [self::$options['slug']]
             [strtolower(self::$options['currencies'])];
 
-        return number_format($filtered, 2);
+        return $filtered;
     }
 }

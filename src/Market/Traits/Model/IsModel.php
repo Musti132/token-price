@@ -17,7 +17,13 @@ trait IsModel {
         self::$data = (object) $data;
         self::$options = $options;
 
-        return self::$_instance->filter();
+        return self::$_instance;
+    }
+
+    public static function notFound(string $message = 'Coin not found') {
+        return [
+            'error' => $message,
+        ];
     }
 }
 ?>

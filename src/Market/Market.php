@@ -19,11 +19,13 @@ class Market implements MarketInterface
      * Token prices we can get from a market.
      * Change if a market can only check specific cryptos, only using short names
      * e.g BTC, XRP, ETH...
+     * Changing here will cause all markets to only be able to get prices on specific cryptos.
+     * Create a $only property within a market class, and add values into there.
      */
     protected array $only = [];
 
     /**
-     * Determine if market requires a API Key
+     * Determine if a market requires a API Key
      */
     protected bool $requiresKey = false;
 
@@ -34,6 +36,11 @@ class Market implements MarketInterface
 
     protected $currencySeperator = ",";
 
+    /**
+     * @param string|array $currencies
+     * 
+     * @return string
+     */
     public function currency(string|array $currencies)
     {
         if (is_array($currencies)) {
@@ -43,6 +50,9 @@ class Market implements MarketInterface
         return $this->currencies = $currencies;
     }
 
+    /**
+     * @return bool
+     */
     public function requiresApiKey(): bool
     {
         if ($this->requiresKey) {
@@ -52,6 +62,11 @@ class Market implements MarketInterface
         return false;
     }
 
+    /**
+     * @param string $crypto
+     * 
+     * @return bool
+     */
     public function canCheckPrice(string $crypto): bool
     {
         if (count($this->only) === 0) {
@@ -65,6 +80,11 @@ class Market implements MarketInterface
         return false;
     }
 
+    /**
+     * @throws \TokenPrice\Exceptions\ApiKeyRequired
+     * 
+     * @return void
+     */
     public function checkForApiRequirements()
     {
         if ($this->requiresApiKey() && $this->apiKey === null) {

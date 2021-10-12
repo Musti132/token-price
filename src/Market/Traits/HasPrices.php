@@ -9,10 +9,6 @@ trait HasPrices
     public function __construct(Token|array $tokens, string $apiKey = null)
     {
         $this->apiKey = $apiKey;
-
-        if(!$this->canCheckPrice($tokens->getShortName())) {
-            exit("Can't check prices other than ". implode(", ", $this->only));
-        }
         
         $this->checkForApiRequirements();
 

@@ -34,15 +34,15 @@ class CoinDesk extends Market implements ApiEndpointInterface
      */
     public function getPrice(callable $function = null)
     {
-        if (is_array($this->tokens)) {
-            exit("ERROR");
-        }
-
         $client = new Client();
 
+        if(!$this->canCheckPrice($this->tokens->getShortName())) {
+            return ['error' => 'CoinDesk can\'t check prices other than: '. implode(', ', $this->only)];
+        }
+
         /**
-        * HTTP GET parameters
-        */
+         * HTTP GET parameters
+         */
         $options = [
             'query' => [
                 'convert' => $this->currencies,
@@ -50,11 +50,11 @@ class CoinDesk extends Market implements ApiEndpointInterface
         ];
 
         $client->method('GET')
-            ->url($this->endpoint() . $this->path.$this->currencies)
+            ->url($this->endpoint() . $this->path . $this->currencies)
             ->options($options)
             ->execute();
 
-        if(is_callable($function)) {
+        if (is_callable($function)) {
             return $function(json_decode($client->body(), true));
         }
 
@@ -62,6 +62,6 @@ class CoinDesk extends Market implements ApiEndpointInterface
             'currencies' => $this->currencies,
         ]);
 
-        return $model;
+        return $model->filter();
     }
 }

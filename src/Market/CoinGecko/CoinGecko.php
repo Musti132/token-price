@@ -12,8 +12,15 @@ use TokenPrice\Token;
 class CoinGecko extends Market implements ApiEndpointInterface
 {
     use HasApiEndpoint;
-
+    
+    /**
+     * Base API Endpoint
+     */
     private const BASE_ENDPOINT = "https://api.coingecko.com/api/v3/";
+
+    /**
+     * Path to grab price
+     */
     private $path = "simple/price";
 
     public $tokens = null;
@@ -23,8 +30,8 @@ class CoinGecko extends Market implements ApiEndpointInterface
      */
     public function getPrice(callable $function = null)
     {
-        if (is_array($this->tokens)) {
-            exit("ERROR");
+        if (!$this->canCheckPrice($this->tokens->getShortName())) {
+            return ['error' => 'CoinGecko can\'t check prices other than: ' . implode(',', $this->only)];
         }
 
         $client = new Client();
@@ -50,7 +57,6 @@ class CoinGecko extends Market implements ApiEndpointInterface
             'slug' => $this->tokens->slug(),
         ]);
 
-        return $model;
+        return $model->filter();
     }
-
 }

@@ -1,19 +1,19 @@
 <?php
 
-namespace TokenPrice\Market\CoinMarketCap;
+namespace TokenPrice\Market\CoinLib;
 
 use TokenPrice\Market\Market;
-use TokenPrice\Market\CoinMarketCap\CoinMarketCapModel;
-use TokenPrice\Market\Interfaces\ApiSecretInterface;
-use TokenPrice\Market\Traits\HasApiSecret;
+use TokenPrice\Market\CoinLib\CoinLibModel;
 use TokenPrice\Client\Client;
 use TokenPrice\Market\Interfaces\ApiEndpointInterface;
+use TokenPrice\Market\Interfaces\ApiSecretInterface;
 use TokenPrice\Market\Traits\HasApiEndpoint;
+use TokenPrice\Market\Traits\HasApiSecret;
 use TokenPrice\Token;
 
-class CoinMarketCap extends Market implements ApiSecretInterface, ApiEndpointInterface
+class CoinLib extends Market implements ApiEndpointInterface, ApiSecretInterface
 {
-    use HasApiSecret, HasApiEndpoint;
+    use HasApiEndpoint, HasApiSecret;
 
     /**
      * API Key for market
@@ -22,13 +22,15 @@ class CoinMarketCap extends Market implements ApiSecretInterface, ApiEndpointInt
 
     /**
      * Base API Endpoint
+     * e.g https://pro-api.coinmarketcap.com/
      */
-    private const BASE_ENDPOINT = "https://pro-api.coinmarketcap.com/";
+    private const BASE_ENDPOINT = "https://coinlib.io/";
 
     /**
      * Path to grab price
+     * e.g v1/cryptocurrency/quotes/latest
      */
-    private $path = "v1/cryptocurrency/quotes/latest";
+    private $path = "api/v1/coin";
 
     public $tokens = null;
 
@@ -40,19 +42,19 @@ class CoinMarketCap extends Market implements ApiSecretInterface, ApiEndpointInt
     public function getPrice(callable $function = null)
     {
         if(!$this->canCheckPrice($this->tokens->getShortName())) {
-            return ['error' => 'CoinMarketCap can\'t check prices other than: '. implode(',', $this->only)];
+            return ['error' => 'CoinLib can\'t check prices other than: '. implode(',', $this->only)];
         }
 
         $client = new Client();
-
+        
         $options = [
             'query' => [
-                'CMC_PRO_API_KEY' => $this->apiKey,
-                'slug' => $this->tokens->slug(),
-                'convert' => $this->currencies,
+                'key' => '2dfaa9250dc8a543',
+                'pref' => $this->currencies,
+                'symbol' => $this->tokens->getShortName(),
             ],
         ];
-        
+
         $client->method('GET')
             ->url($this->endpoint() . $this->path)
             ->options($options)
@@ -62,7 +64,7 @@ class CoinMarketCap extends Market implements ApiSecretInterface, ApiEndpointInt
             return $function(json_decode($client->body(), true));
         }
 
-        $model = CoinMarketCapModel::create($client->body(), [
+        $model = CoinLibModel::create($client->body(), [
             'currencies' => $this->currencies,
         ]);
 

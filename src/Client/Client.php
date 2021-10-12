@@ -2,13 +2,17 @@
 namespace TokenPrice\Client;
 
 use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\ClientException;
 
 Class Client {
     public $client;
     public $request;
     public $url;
     public $method;
-    public $options;
+    public array $options = [
+        'http_errors' => false,
+        'verify' => false,
+    ];
 
     public function __construct() {
         $this->client = new HttpClient();
@@ -31,7 +35,7 @@ Class Client {
     }
 
     public function options(array $options) {
-        $this->options = $options;
+        $this->options += $options;
 
         return $this;
     }
@@ -44,5 +48,3 @@ Class Client {
         return $this->request->getStatusCode();
     }
 }
-
-?>
