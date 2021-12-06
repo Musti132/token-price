@@ -1,3 +1,7 @@
 /vendor/
 test.php
 /stub/
+Db.php
+footie_price
+functions.php
+history.txt

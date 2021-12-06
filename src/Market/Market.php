@@ -5,6 +5,7 @@ namespace TokenPrice\Market;
 use TokenPrice\Exceptions\ApiKeyRequired;
 use TokenPrice\Market\Interfaces\MarketInterface;
 use TokenPrice\Market\Traits\HasPrices;
+use TokenPrice\Address\AddressValidator;
 
 class Market implements MarketInterface
 {
@@ -78,6 +79,34 @@ class Market implements MarketInterface
         }
 
         return false;
+    }
+
+    /**
+     * Check if provided tracker can check prices with short names e.g BTC
+     * or only check with contract addresses.
+     */
+    public function canCheckWithName(string $address): bool
+    {
+        if ($this->addressOnly === true && $address === "") {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function isValidAddress(string $address): bool
+    {
+        if($address == null) {
+            return false;
+        }
+
+        $validator = new AddressValidator;
+        
+        if (!$validator->isAddress($address)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

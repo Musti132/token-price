@@ -11,7 +11,8 @@ class Token
 
     public function __construct(
         public string $name,
-        public string $short
+        public string $short,
+        public string $address = "",
     ) {
     }
 
@@ -28,6 +29,11 @@ class Token
     public function getShortName()
     {
         return $this->short;
+    }
+
+    public function getAddress()
+    {
+        return $this->address;
     }
 
     public function slug()

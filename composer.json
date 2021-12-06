@@ -8,7 +8,8 @@
         }
     },
     "require": {
-        "guzzlehttp/guzzle": "^7.3"
+        "guzzlehttp/guzzle": "^7.3",
+        "greensea/keccak": "^1.0"
     },
     "license": "proprietary",
     "autoload": {
